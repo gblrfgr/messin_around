@@ -52,6 +52,7 @@ void vector_scale(vector_t* vec, double k) {
 
 void vector_subtract(vector_t* a, vector_t b) {
     // subtracts b from a and puts result in a
+
     assert(a->dimensions == b.dimensions);
     for (unsigned int i = 0; i < a->dimensions; i++) {
         a->buf[i] -= b.buf[i];
@@ -67,24 +68,20 @@ double vector_dot(vector_t a, vector_t b) {
     return acc;
 }
 
-void apply_matrix(matrix_t mat, vector_t in, vector_t* out) {
-    // multiplies in by mat and stores result to out
-
-    assert(mat.width == in.dimensions);
+void apply_matrix(matrix_t mat, vector_t vec, vector_t* out) {
+    assert(mat.width == vec.dimensions);
     assert(mat.height == out->dimensions);
 
     for (unsigned int i = 0; i < out->dimensions; i++) {
         double acc = 0;
-        for (unsigned int j = 0; j < in.dimensions; j++) {
-            acc += in.buf[j] * mat.buf[j + i * mat.width];
+        for (unsigned int j = 0; j < vec.dimensions; j++) {
+            acc += vec.buf[j] * mat.buf[j + i * mat.width];
         }
         out->buf[i] = acc;
     }
 }
 
 void matrix_multiply(matrix_t a, matrix_t b, matrix_t* out) {
-    // multiplies a and b and stores the result in out
-
     assert(a.height == b.width);
     assert(a.height == out->height);
     assert(b.width == out->width);
