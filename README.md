@@ -9,5 +9,5 @@
 - If a function will modify one of its parameters, make that parameter a pointer to what's being modified, even if not strictly necessary. 
     - Unless there's special memory considerations, things should be passed by value in general.
 - Anything that allocates memory should be clearly commented as such, and if that memory needs to be freed by another function later, *explicitly say so*.
-    - Use explicit casts unless it becomes needlessly verbose.
+- Use explicit casts unless it becomes needlessly verbose.
 - Avoid 'magic numbers'. Define things. Give them names. Main exception is situations like where you have an array of the points of a triangle; you don't need a `#DEFINE` to say there are three points in a triangle.
