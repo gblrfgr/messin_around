@@ -190,6 +190,7 @@ void gen_rotation_matrix(double yaw, double pitch, double roll, matrix_t* out) {
 
 bool project_2d(camera_t cam, vector_t in, vector_t* out) {
     // return value is whether or not projection was successful
+    // out has x and y in the range from -1 to 1
 
     assert(in.dimensions == 3);
     assert(out->dimensions == 2);
