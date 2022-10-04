@@ -1,6 +1,7 @@
 ## Style considerations
 - Pretty much all visual style should be handled by `clang-format`.
 - **Things should be written clearly enough no comment is needed. Comments should explain logical behaviors, not what your spaghetti code is supposed to mean.**
+    - On that note, no capitalization in comments except for clarity or emphasis.
 - If you need a floating point type and don't have special memory considerations, just use a `double`.
 - If you need an integer that will never be negative and don't have special memory considerations, use an `unsigned int`.
     - This includes loop iterators, which should go `i`, `j`, `k`, etc. unless there's a good reason not to.

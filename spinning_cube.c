@@ -142,8 +142,8 @@ double vector_magnitude(vector_t vec) {
 }
 
 void gen_rotation_matrix(double yaw, double pitch, double roll, matrix_t* out) {
-    // Generates separate matrices for yaw, pitch, and roll and multiplies them together
-    // More computation than required? Yes. Conceptually really simple? Also yes.
+    // generates separate matrices for yaw, pitch, and roll and multiplies them together
+    // more computation than required? yes. conceptually really simple? also yes.
 
     assert(out->width == out->height && out->height == 3);
 
