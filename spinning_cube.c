@@ -218,7 +218,7 @@ bool project_2d(camera_t cam, vector_t in, vector_t* out) {
     double theta = acos(vector_dot(cam.right, rebased));
 
     // TIME TO COMPUTE A CROSS PRODUCT YAYYYYY
-    // since rebased is now coplanar with cam.right, rebased x cam.right is equal to cam.forward multiplied by a
+    // since rebased is now coplanar with cam.right, cross(rebased, cam.right) is equal to cam.forward multiplied by a
     // constant! if that constant is negative, it means that theta needs to be negative.
     double crossed_x = cam.right.buf[1] * rebased.buf[2] - cam.right.buf[2] * rebased.buf[1];
     double crossed_y = cam.right.buf[0] * rebased.buf[2] - cam.right.buf[2] * rebased.buf[0];
