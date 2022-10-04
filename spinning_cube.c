@@ -43,6 +43,7 @@ void vector_scale(vector_t* vec, double k) {
 }
 
 void vector_subtract(vector_t* a, vector_t b) {
+    // subtracts b from a and puts result in a
     assert(a->dimensions == b.dimensions);
     for (unsigned int i = 0; i < a->dimensions; i++) {
         a->buf[i] -= b.buf[i];
@@ -59,6 +60,8 @@ double vector_dot(vector_t a, vector_t b) {
 }
 
 void apply_matrix(matrix_t mat, vector_t in, vector_t* out) {
+    // multiplies in by mat and stores result to out
+
     assert(mat.width == in.dimensions);
     assert(mat.height == out->dimensions);
 
@@ -72,6 +75,8 @@ void apply_matrix(matrix_t mat, vector_t in, vector_t* out) {
 }
 
 void matrix_multiply(matrix_t a, matrix_t b, matrix_t* out) {
+    // multiplies a and b and stores the result in out
+
     assert(a.height == b.width);
     assert(a.height == out->height);
     assert(b.width == out->width);
@@ -88,7 +93,6 @@ void matrix_multiply(matrix_t a, matrix_t b, matrix_t* out) {
 }
 
 void matrix_pprint(matrix_t mat) {
-    // for debugging
     for (unsigned int y = 0; y < mat.height; y++) {
         printf("[\t");
         for (unsigned int x = 0; x < mat.width; x++) {
@@ -99,7 +103,6 @@ void matrix_pprint(matrix_t mat) {
 }
 
 void vector_pprint(vector_t vec) {
-    // also for debugging
     for (unsigned int i = 0; i < vec.dimensions; i++) {
         printf("[\t%g\t]\n", vec.buf[i]);
     }
@@ -131,7 +134,12 @@ double vector_magnitude(vector_t vec) {
 }
 
 void gen_rotation_matrix(double yaw, double pitch, double roll, matrix_t* out) {
+    // Generates separate matrices for yaw, pitch, and roll and multiplies them together
+    // More computation than required? Yes. Conceptually really simple? Also yes.
+
     assert(out->width == out->height && out->height == 3);
+
+    // clang-format off
     double roll_matrix_data[3][3] = {
         {cos(roll), -sin(roll), 0},
         {sin(roll), cos(roll), 0},
@@ -142,8 +150,13 @@ void gen_rotation_matrix(double yaw, double pitch, double roll, matrix_t* out) {
         {0, sin(pitch), cos(pitch)},
         {0, cos(pitch), -sin(pitch)},
     };
-    double yaw_matrix_data[3][3] = {{cos(yaw), 0, -sin(yaw)}, {0, 1, 0}, {sin(yaw), 0, cos(yaw)}};
+    double yaw_matrix_data[3][3] = {
+        {cos(yaw), 0, -sin(yaw)},
+        {0, 1, 0},
+        {sin(yaw), 0, cos(yaw)}
+    };
     double temp_matrix_data[3][3];
+    // clang-format on
 
     matrix_t roll_matrix = {
         3,
@@ -199,6 +212,8 @@ bool project_2d(camera_t cam, vector_t in, vector_t* out) {
     double theta = acos(vector_dot(cam.right, rebased));
 
     // TIME TO COMPUTE A CROSS PRODUCT YAYYYYY
+    // Since rebased is now coplanar with cam.right, rebased x cam.right is equal to cam.forward multiplied by a
+    // constant! If that constant is negative, it means that theta needs to be negative.
     double crossed_x = cam.right.buf[1] * rebased.buf[2] - cam.right.buf[2] * rebased.buf[1];
     double crossed_y = cam.right.buf[0] * rebased.buf[2] - cam.right.buf[2] * rebased.buf[0];
     double crossed_z = cam.right.buf[0] * rebased.buf[1] - cam.right.buf[1] * rebased.buf[0];
@@ -230,10 +245,14 @@ void screen_render(screen_t s) {
 void screen_drawline(screen_t* s, vector_t a, vector_t b, char color) {
     assert(a.dimensions == 2);
     assert(b.dimensions == 2);
+
+    // determine how many steps we need for a full (not skipping) line
     unsigned int steps = (unsigned int)ceil(fabs(a.buf[0] - b.buf[0]) / 2 * s->width);
     if ((unsigned int)ceil(fabs(a.buf[1] - b.buf[1]) / 2 * s->height) > steps) {
         steps = (unsigned int)ceil(fabs(a.buf[1] - b.buf[1]) / 2 * s->height);
     }
+
+    // step along the line and color in the screen
     double m = (b.buf[1] - a.buf[1]) / (b.buf[0] - a.buf[0]);
     double current_x = a.buf[0];
     double current_y = a.buf[1];
