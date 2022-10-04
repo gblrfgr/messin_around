@@ -4,6 +4,14 @@
 #include <stdio.h>
 #include <time.h>
 
+// in units of radians
+#define YAW 0.45
+#define PITCH 2.6
+#define ROLL 0.9
+
+#define SCREEN_HEIGHT 40
+#define SCREEN_WIDTH 80
+
 typedef struct matrix_t {
     const unsigned int width;
     const unsigned int height;
@@ -243,6 +251,9 @@ void screen_render(screen_t s) {
 }
 
 void screen_drawline(screen_t* s, vector_t a, vector_t b, char color) {
+    // assumes the axes of a and b go from -1 to 1
+    // -1 is left/top, 1 is right/bottom
+
     assert(a.dimensions == 2);
     assert(b.dimensions == 2);
 
@@ -308,12 +319,12 @@ int main() {
         {3, cam_rgt_data},
     };
 
-    char screen_data[80][40];
-    screen_t screen = {80, 40, (char*)screen_data};
+    char screen_data[SCREEN_WIDTH][SCREEN_HEIGHT];
+    screen_t screen = {SCREEN_WIDTH, SCREEN_HEIGHT, (char*)screen_data};
     while (true) {
         screen_clear(&screen, ' ');
         double scale = (double)clock() / CLOCKS_PER_SEC;
-        gen_rotation_matrix(0.45 * scale, 2.6 * scale, 0.9 * scale, &rotation_matrix);
+        gen_rotation_matrix(YAW * scale, PITCH * scale, ROLL * scale, &rotation_matrix);
         for (unsigned int i = 0; i < 8; i++) {
             apply_matrix(rotation_matrix, cube_points[i], &rotated_points[i]);
             project_2d(cam, rotated_points[i], &projected_points[i]);
