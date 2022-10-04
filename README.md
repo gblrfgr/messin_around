@@ -1,6 +1,6 @@
 ## Style considerations
 - Pretty much all visual style should be handled by `clang-format`.
-- **Things should be written clearly enough no comment is needed. Comments should explain logical behaviors, not what your spaghetti code is supposed to mean.**
+- **Things should in general be written clearly enough to not need comments. Comments should be used to explain logical behaviors, not what your spaghetti code is supposed to mean.**
     - On that note, no capitalization in comments except for clarity or emphasis.
     - Comments should be casual, but not unnecessary or mean. `// spread this baby out` is fine if it's clear in context what that means.
 - If you need a floating point type and don't have special memory considerations, just use a `double`.
