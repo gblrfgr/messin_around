@@ -134,7 +134,7 @@ typedef struct pgl_camera_t {
 
 bool pgl_project_2d(pgl_camera_t cam, pgl_vector3_t in, pgl_vector2_t* out) {
     // return value is whether or not point is in view of camera
-    // out has x and y in the range from -1 to 1
+    // out has x and y in the range from -1 to 1 if in view of camera
 
     in = pgl_vector3_add(in, pgl_vector3_scale(cam.position, -1.0));
     pgl_vector3_t camera_space = {
@@ -311,7 +311,6 @@ pgl_matrix33_t pgl_gen_rotation_matrix(double yaw, double pitch, double roll) {
         {0, sin(pitch), cos(pitch)},
         {0, cos(pitch), -sin(pitch)},
     };
-    // pgl_matrix33_pprint(pgl_matrix33_multiply(roll_matrix, pitch_matrix));
     pgl_matrix33_t yaw_matrix = {
         {cos(yaw), 0, sin(yaw)},
         {0, 1, 0},
