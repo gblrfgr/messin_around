@@ -143,8 +143,8 @@ bool pgl_project_2d(pgl_camera_t cam, pgl_vector3_t in, pgl_vector2_t* out) {
         pgl_vector3_dot(cam.forward, in),
     };
 
-    out->x = camera_space.x / (camera_space.z * tan(cam.fov / 2.0));
-    out->y = camera_space.y / (camera_space.z * tan(cam.fov / 2.0));
+    out->x = atan2(camera_space.x, camera_space.z) / (cam.fov / 2.0);
+    out->y = atan2(camera_space.y, camera_space.z) / (cam.fov / 2.0);
 
     return (-1 <= out->x && out->x <= 1) && (-1 <= out->y && out->y <= 1);
 }
