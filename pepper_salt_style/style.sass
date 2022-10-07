@@ -1,0 +1,48 @@
+@font-face
+    font-family: "Noto Sans Regular"
+    src: url(fonts/Noto_Sans/NotoSans-Regular.ttf)
+
+@font-face
+    font-family: "Noto Sans Black"
+    src: url(fonts/Noto_Sans/NotoSans-Black.ttf)
+
+@font-face
+    font-family: "Fira Code"
+    src: url(fonts/Fira_Code/static/FiraCode-Regular.ttf)
+    
+$sans-fonts: "Noto Sans Regular", sans-serif
+$bold-sans-fonts: "Noto Sans Black", sans-serif
+$code-fonts: "Fira Code", monospace
+
+$color-birdseye: #C71121
+$color-salt: #EDF2F4
+$color-pepper: #202231
+$color-codebg: rgb(224, 226, 242)
+$color-codebg-hover: #EFE1F0
+
+body
+    background: $color-salt
+
+p
+    font: 13.5pt $sans-fonts
+    color: $color-pepper
+
+b
+    font: 13.5pt $bold-sans-fonts
+
+.site-title
+    font: 27pt $bold-sans-fonts
+    color: $color-birdseye
+    text-align: center
+
+.code
+    background: $color-codebg
+    border-radius: 5px
+    padding: 13.5pt
+    width: fit-content
+    font: 13.5pt $code-fonts
+    color: $color-pepper
+    white-space: pre
+
+.code:hover
+    background: $color-codebg-hover
