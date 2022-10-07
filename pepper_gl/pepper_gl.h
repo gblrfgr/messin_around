@@ -132,41 +132,21 @@ typedef struct pgl_camera_t {
     pgl_vector3_t right;
 } pgl_camera_t;
 
-bool pgl_is_visible(pgl_camera_t cam, pgl_vector3_t point) {
-    point = pgl_vector3_add(point, pgl_vector3_scale(cam.position, -1.0));
-    point = pgl_vector3_scale(point, 1 / pgl_vector3_magnitude(point));
-    return acos(pgl_vector3_dot(cam.forward, point)) <= cam.fov / 2.0;
-}
-
 bool pgl_project_2d(pgl_camera_t cam, pgl_vector3_t in, pgl_vector2_t* out) {
-    // return value is whether or not projection was successful
+    // return value is whether or not point is in view of camera
     // out has x and y in the range from -1 to 1
 
-    if (!pgl_is_visible(cam, in)) {
-        return false;
-    }
-
     in = pgl_vector3_add(in, pgl_vector3_scale(cam.position, -1.0));
-    in = pgl_vector3_scale(in, 1 / pgl_vector3_magnitude(in));
+    pgl_vector3_t camera_space = {
+        pgl_vector3_dot(cam.right, in),
+        pgl_vector3_dot(pgl_vector3_cross(cam.right, cam.forward), in),
+        pgl_vector3_dot(cam.forward, in),
+    };
 
-    // flatten in onto a screen, coplanar with cam.right
-    pgl_vector3_t offset = pgl_vector3_scale(cam.forward, -pgl_vector3_dot(cam.forward, in));
-    in = pgl_vector3_add(in, offset);
-    double r = pgl_vector3_magnitude(in);
-    in = pgl_vector3_scale(in, 1 / r);
-    double theta = acos(pgl_vector3_dot(cam.right, in));
+    out->x = camera_space.x / (camera_space.z * tan(cam.fov / 2.0));
+    out->y = camera_space.y / (camera_space.z * tan(cam.fov / 2.0));
 
-    // since in is now coplanar with cam.right, cross(in, cam.right) is equal to cam.forward multiplied by a constant!
-    // if that constant is negative, it means that theta needs to be negative.
-    pgl_vector3_t crossed = pgl_vector3_cross(in, cam.right);
-    if ((crossed.x * cam.forward.x < 0) || (crossed.y * cam.forward.y < 0) || (crossed.z * cam.forward.z < 0)) {
-        theta *= -1;
-    }
-
-    out->x = r * cos(theta);
-    out->y = r * sin(theta);
-
-    return true;
+    return (-1 <= out->x && out->x <= 1) && (-1 <= out->y && out->y <= 1);
 }
 
 /* pgl_screen_t and its associated operations */
@@ -255,11 +235,9 @@ typedef struct pgl_renderschedule_t {
 
 pgl_error_t pgl_init_renderschedule(pgl_renderschedule_t* sched) {
     // dynamically allocates memory that must be freed with pgl_destroy_renderschedule
-    *sched = {
-        0,
-        PGL_RS_INITIAL_LENGTH,
-        (pgl_renderschedule_entry_t*)malloc(sizeof(pgl_renderschedule_entry_t) * PGL_RS_INITIAL_LENGTH),
-    };
+    sched->length = 0;
+    sched->allocated = PGL_RS_INITIAL_LENGTH;
+    sched->buf = (pgl_renderschedule_entry_t*)malloc(sizeof(pgl_renderschedule_entry_t) * PGL_RS_INITIAL_LENGTH);
     if (sched->buf == NULL) {
         return PGL_DYNAMIC_ALLOCATION_FAILURE;
     } else {
@@ -291,11 +269,12 @@ pgl_error_t pgl_schedule_triangle(pgl_renderschedule_t* sched, pgl_triangle_t t,
             return err;
         }
     }
-    sched->buf[sched->length] = {
+    sched->buf[sched->length] = (pgl_renderschedule_entry_t){
         .triangle = t,
         .type = PGL_TRIANGLE,
         .color = color,
     };
+    sched->length++;
     return PGL_NO_ERROR;
 }
 
@@ -306,11 +285,12 @@ pgl_error_t pgl_schedule_line(pgl_renderschedule_t* sched, pgl_line_t l, char co
             return err;
         }
     }
-    sched->buf[sched->length] = {
+    sched->buf[sched->length] = (pgl_renderschedule_entry_t){
         .line = l,
         .type = PGL_LINE,
         .color = color,
     };
+    sched->length++;
     return PGL_NO_ERROR;
 }
 
